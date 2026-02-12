@@ -1,4 +1,6 @@
 import { Button } from '@/components/ui/button'
+import { SignInButton } from '@clerk/nextjs'
+import { Sign } from 'crypto'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
@@ -32,7 +34,9 @@ function Header() {
                 })}
             </div>
             {/* get started */}
-            <Button >Get Started <ArrowRight /></Button>
+            <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
+                <Button >Get Started <ArrowRight /></Button>
+            </SignInButton>
         </div>
     )
 }
