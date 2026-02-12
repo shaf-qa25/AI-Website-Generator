@@ -4,28 +4,34 @@ import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const { projectId, frameId, messages } = await req.json();
+    const { projectId, frameId, messages, uiConfig } = await req.json();
 
     const user = await currentUser();
+    const userEmail = user?.primaryEmailAddress?.emailAddress;
+
+    if (!userEmail) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
-        // Step 1: Create Project
-        const projectResult = await db.insert(projectTable).values({
+        await db.insert(projectTable).values({
             projectId: projectId,
-            createdBy: user?.primaryEmailAddress?.emailAddress
-        }).returning();
+            createdBy: userEmail
+        });
 
-        // Step 2: Create Initial Frame
-        const frameResult = await db.insert(frameTable).values({
+
+        await db.insert(frameTable).values({
             frameId: frameId,
-            projectId: projectId
-        }).returning();
+            projectId: projectId,
+            uiConfig: uiConfig || {},
+            version: 1
+        });
 
-        // Step 3: Save initial User Message in Chat
-        const chatResult = await db.insert(chatTable).values({
+        await db.insert(chatTable).values({
+            projectId: projectId,
             chatMessage: messages,
-            createdBy: user?.primaryEmailAddress?.emailAddress
-        }).returning();
+            createdBy: userEmail
+        });
 
         return NextResponse.json({
             projectId,
@@ -34,6 +40,7 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (e) {
-        return NextResponse.json({ error: e }, { status: 500 });
+        console.error("DB Error:", e);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

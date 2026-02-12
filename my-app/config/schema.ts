@@ -20,6 +20,9 @@ export const frameTable = pgTable('frames', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     frameId: varchar().notNull().unique(),
     projectId: varchar().references(() => projectTable.projectId),
+    version: integer().default(1),
+    uiConfig: jsonb().notNull(), // AI jo components select karega unki details
+    explanation: varchar(),
     createdOn: timestamp().defaultNow()
 });
 
@@ -27,6 +30,7 @@ export const frameTable = pgTable('frames', {
 export const chatTable = pgTable('chats', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     chatMessage: jsonb(),
+    projectId: varchar().references(() => projectTable.projectId),
     createdBy: varchar().references(() => usersTable.email),
     createdOn: timestamp().defaultNow()
 });
