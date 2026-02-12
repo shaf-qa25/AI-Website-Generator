@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 import Provider from "./provider";
+import { Toaster } from "sonner";
 
 
 export const metadata: Metadata = {
@@ -23,7 +24,9 @@ export default function RootLayout({
       <html lang="en">
         <body className={outfit.className} //ye line poori application ko outfit font de rhi h
         >
-          <Provider>{children}</Provider>
+          <Provider>{children}
+            <Toaster />
+          </Provider>
         </body>
       </html>
     </ClerkProvider>
