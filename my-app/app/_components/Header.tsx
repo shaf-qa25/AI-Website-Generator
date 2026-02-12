@@ -1,8 +1,11 @@
+"use client"
+
 import { Button } from '@/components/ui/button'
-import { SignInButton } from '@clerk/nextjs'
+import { SignInButton, useUser } from '@clerk/nextjs'
 import { Sign } from 'crypto'
 import { ArrowRight } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
 
 
@@ -17,6 +20,7 @@ const MenuOption = [
     }
 ]
 function Header() {
+    const { user } = useUser();
     return (
         <div className="flex items-center justify-between py-6 px-10 bg-white dark:bg-black shadow-md">
             {/* logo/ */}
@@ -34,9 +38,15 @@ function Header() {
                 })}
             </div>
             {/* get started */}
-            <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
-                <Button >Get Started <ArrowRight /></Button>
-            </SignInButton>
+            {!user ? (
+                <SignInButton mode='modal' forceRedirectUrl={'/workspace'}>
+                    <Button>Get Started <ArrowRight /></Button>
+                </SignInButton>
+            ) : (
+                <Link href={'/workspace'}>
+                    <Button>Get Started <ArrowRight /></Button>
+                </Link>
+            )}
         </div>
     )
 }
